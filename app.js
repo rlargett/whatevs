@@ -5,9 +5,9 @@ const app = express();
 app.set('view engine', 'pug');
 
 app.get('/', (req, res) => {
-    res.render('index', {title: 'This a Page Title'});
+    res.render('index', {title: 'Test Webpack and Pug'});
 });
 
-app.listen(3000, () => {
+app.listen(8080, () => {
     console.log('We are up and running');
 });

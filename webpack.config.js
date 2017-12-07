@@ -1,36 +1,41 @@
 const path = require('path');
-const pugHtmlLoader = require('pug-html-loader');
-const htmlLoader = require('html-loader');
-const fileLoader = require('file-loader');
-const extractText = require('extract-text-webpack-plugin');
+const glob = require('glob');
+const pugLoader = require('pug-loader');
+const cleanWebpack = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 
-const extractPug = new extractText('[name].html')
 
-module.exports = {
+let config = {
     entry: {
-        index: "./views/index.pug",
-        about: "./views/about.pug",
+        "bundle.js": "./index.js"
     },
     output: {
-        path: path.resolve(__dirname, "dist"),
-        filename: "[name].html"
+        path: path.resolve(__dirname, "dist/"),
+        filename: "[name]"
     },
+    devtool: 'source-map',
     devServer: {
-        contentBase: './dist',
-        hot: true
+        contentBase: 'dist',
+        //hot: true
     },
-    module: {
-        rules: [{
-            test: /\.pug/,
-            use: extractPug.extract({
-                fallback: "html-loader",
-                use: ['html-loader', 'pug-html-loader?pretty&exports=false'],
-            })
-        }]
-    },
+    // module: {},
     plugins: [
-        extractPug,
-        new webpack.HotModuleReplacementPlugin()
-    ]
+        new webpack.HotModuleReplacementPlugin(),
+        new cleanWebpack(['dist'])
+    ],
 }
+
+glob.sync('views/**/*.pug').map(
+    page => config.plugins.push(
+        new HtmlWebpackPlugin(
+            {
+                filename: `${page.replace(/(^views\/|\.pug$)/gi, '')}.html`,
+                template: `!!pug-loader?pretty!${page}`,
+                minify: false,
+            }
+        )
+    )
+);
+
+module.exports = config;
