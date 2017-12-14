@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title></title>
+</head>
+
+<body>
+
+  <div class="vue">
+    <h1>{{title}}</h1>
+    <p>Hello {{name}}. {{message}}</p>
+    <input id="task" type="text" v-model="tasks.description"><input id='person' type="text" v-model="tasks.assignee">
+    <button @click='addTask'>Add Task</button>
+    <div>
+      <h1>All Tasks</h1>
+      <ul>
+        <li v-for="task in tasks">{{task.description}}, {{task.assignee}} <input type="checkbox" v-model="task.completed"></li>
+      </ul>
+      <h2>Incomplete Tasks</h2>
+      <ul>
+        <li v-for="task in incompletTasks">{{task.description}}, {{task.assignee}} <input type="checkbox" v-model="task.completed"></li>
+      </ul>
+      <h2>Completed Tasks</h2>
+      <ul>
+        <li v-for="task in completedTasks">{{task.description}}, {{task.assignee}} <input type="checkbox" v-model="task.completed"></li>
+      </ul>
+      <h2>Vue Component</h2>
+      <ul>
+        <task v-for="task in tasks">{{task.description}}</task>
+      </ul>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/vue@2.5.9/dist/vue.js"></script>
+  <script>
+    Vue.component('task', {
+      template: '<li><slot></slot></li>'
+    })
+    var app = new Vue({
+      el: '.vue',
+      data: {
+        title: 'Hello from Vue',
+        message: 'Working with Vue and Webpack and Pug',
+        name: 'Enter Name',
+        tasks: [
+          { description: "Task 1", assignee: "person", completed: true },
+          { description: "Task 2", assignee: "person", completed: false },
+          { description: "Task 3", assignee: "person", completed: false },
+          { description: "Task 4", assignee: "person", completed: true },
+          { description: "Task 5", assignee: "person", completed: false },
+        ]
+      },
+      computed: {
+        incompletTasks() {
+          return this.tasks.filter(task => !task.completed);
+        },
+        completedTasks() {
+          return this.tasks.filter(task => task.completed);
+        }
+      },
+      methods: {
+        addTask: function(){
+          let task = document.getElementById('task');
+          let person = document.getElementById('person');
+          this.tasks.push({
+            description: task.value,
+            assignee: person.value,
+            completed: false
+          })
+          task.value = '';
+          person.value = '';
+        }
+      }
+    })
+    //Vue.config.devtools = true;
+  </script>
+
+</body>
+
+</html>
